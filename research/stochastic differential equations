@@ -1,0 +1,99 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 29,
+   "id": "05a31490-8f96-41c8-99f4-6bc179474f5c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "using ModelingToolkit\n",
+    "using Plots\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "id": "aa3f5bda-b6fc-444d-84e4-96ff5ab1d891",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "LoadError",
+     "evalue": "LoadError: UndefVarError: @variables not defined\nin expression starting at In[32]:4",
+     "output_type": "error",
+     "traceback": [
+      "LoadError: UndefVarError: @variables not defined\nin expression starting at In[32]:4",
+      "",
+      "Stacktrace:",
+      " [1] top-level scope",
+      "   @ :0",
+      " [2] eval",
+      "   @ ./boot.jl:368 [inlined]",
+      " [3] include_string(mapexpr::typeof(REPL.softscope), mod::Module, code::String, filename::String)",
+      "   @ Base ./loading.jl:1428"
+     ]
+    }
+   ],
+   "source": [
+    "using DifferentialEquations, ModelingToolkit\n",
+    "\n",
+    "@parameters t σ ρ β\n",
+    "@variables x(t) y(t) z(t)\n",
+    "D = Differential(t)\n",
+    "\n",
+    "eqs = [D(D(x)) ~ σ * (y - x),\n",
+    "    D(y) ~ x * (ρ - z) - y,\n",
+    "    D(z) ~ x * y - β * z]\n",
+    "\n",
+    "@named sys = ODESystem(eqs)\n",
+    "sys = structural_simplify(sys)\n",
+    "\n",
+    "u0 = [D(x) => 2.0,\n",
+    "    x => 1.0,\n",
+    "    y => 0.0,\n",
+    "    z => 0.0]\n",
+    "\n",
+    "p = [σ => 28.0,\n",
+    "    ρ => 10.0,\n",
+    "    β => 8 / 3]\n",
+    "\n",
+    "tspan = (0.0, 100.0)\n",
+    "prob = ODEProblem(sys, u0, tspan, p, jac = true)\n",
+    "sol = solve(prob)\n",
+    "using Plots\n",
+    "plot(sol, idxs = (x, y))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d895cbec-b272-413a-9e59-4dde276dacc8",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "253dfbff-3f73-4be9-9151-4a74509dae40",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Julia 1.8.1",
+   "language": "julia",
+   "name": "julia-1.8"
+  },
+  "language_info": {
+   "file_extension": ".jl",
+   "mimetype": "application/julia",
+   "name": "julia",
+   "version": "1.8.1"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
